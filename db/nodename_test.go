@@ -11,12 +11,12 @@ import (
 
 func init() {
 	config.Init()
-	conf := config.GetConfig()
-	conf.DBUserName = "root"
-	conf.DBUserPassword = "bXlzcWw="
-	conf.DBIP = "1.15.85.191"
-	conf.DBPort = 3306
-	conf.DBName = "hpbvote"
+	//conf := config.GetConfig()
+	//conf.DBUserName = "root"
+	//conf.DBUserPassword = "123456"
+	//conf.DBIP = "127.0.0.1"
+	//conf.DBPort = 3306
+	//conf.DBName = "hpbvote"
 }
 
 func initTable(t *testing.T) error {
@@ -34,12 +34,11 @@ func initTable(t *testing.T) error {
 	return nil
 }
 
-
 func TestNodeName_Create(t *testing.T) {
 	initTable(t)
 
 	datas := make([]*NodeName, 0)
-	list,err := ioutil.ReadFile("nodelist.json")
+	list, err := ioutil.ReadFile("nodelist.json")
 	if err != nil {
 		fmt.Println("open nodelist failed.")
 		return
@@ -51,7 +50,7 @@ func TestNodeName_Create(t *testing.T) {
 	}
 
 	for _, d := range datas {
-		if name,err := d.GetNameByCoinbase(d.Coinbase); err == nil {
+		if name, err := d.GetNameByCoinbase(d.Coinbase); err == nil {
 			fmt.Printf("coinbase %s existed, name is %s.\n", d.Coinbase, name)
 			continue
 		}
