@@ -7,5 +7,5 @@ import (
 
 func InitRouter(r *gin.Engine) {
 	v1 := r.Group("/v1")
-	v1.POST("/nodename:addr", handler.GetNodeName)
+	v1.GET("/nodename/:addr", handler.GetNodeName)
 }

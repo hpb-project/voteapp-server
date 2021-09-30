@@ -7,6 +7,7 @@ import (
 	"github.com/hpb-project/votedapp-server/common/logger"
 	"github.com/hpb-project/votedapp-server/common/utils"
 	"github.com/hpb-project/votedapp-server/config"
+	"github.com/hpb-project/votedapp-server/db"
 	"github.com/hpb-project/votedapp-server/router"
 	"github.com/hpb-project/votedapp-server/version"
 	log "github.com/sirupsen/logrus"
@@ -14,7 +15,6 @@ import (
 	"os/signal"
 	"syscall"
 )
-
 
 func main() {
 	defer func() {
@@ -34,6 +34,7 @@ func main() {
 	}
 	conf := config.GetConfig()
 	logger.Init(conf.LogDir, conf.LogLevel)
+	db.Init()
 
 	go func() {
 		r := gin.New()
@@ -55,6 +56,7 @@ func main() {
 }
 
 var versionFlag bool
+
 func initFlags() {
 	flag.BoolVar(&versionFlag, "version", false, "print version info")
 	flag.Parse()

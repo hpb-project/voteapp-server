@@ -9,7 +9,8 @@ import (
 )
 
 func GetNodeName(c *gin.Context) {
-	addr := c.Param("addr")
+	addr := c.Query("addr")
+
 	if len(addr) != 42 {
 		ResponseError(c, http.StatusBadRequest, fmt.Sprintf("invalid param"))
 		return
