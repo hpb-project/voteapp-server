@@ -14,12 +14,13 @@ type Config struct {
 }
 
 type Common struct {
-	IP       string `json:"ip" envconfig:"IP" default:"0.0.0.0"`
-	Port     int    `json:"port" envconfig:"PORT" default:"8867"`
-	LogLevel string `json:"log_level" envconfig:"LOG_LEVEL" default:"info"`
-	LogDir   string `json:"log_dir" envconfig:"LOG_DIR"`
-	RPC      string `json:"rpc" envconfig:"RPC"`
-	Mode     string `json:"mode" envconfig:"MODE"`
+	IP        string `json:"ip" envconfig:"IP" default:"0.0.0.0"`
+	Port      int    `json:"port" envconfig:"PORT" default:"8867"`
+	LogLevel  string `json:"log_level" envconfig:"LOG_LEVEL" default:"info"`
+	LogDir    string `json:"log_dir" envconfig:"LOG_DIR"`
+	RPC       string `json:"rpc" envconfig:"RPC"`
+	Mode      string `json:"mode" envconfig:"MODE"`
+	ProxyAddr string `json:"proxy_addr" envconfig:"PROXY_ADDR"`
 }
 
 type DB struct {
@@ -35,7 +36,7 @@ type DB struct {
 }
 
 var (
-	once sync.Once
+	once     sync.Once
 	confLock sync.RWMutex
 	gConf    = &Config{}
 )

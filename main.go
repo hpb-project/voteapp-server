@@ -9,6 +9,7 @@ import (
 	"github.com/hpb-project/votedapp-server/config"
 	"github.com/hpb-project/votedapp-server/db"
 	"github.com/hpb-project/votedapp-server/router"
+	"github.com/hpb-project/votedapp-server/task"
 	"github.com/hpb-project/votedapp-server/version"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -34,7 +35,16 @@ func main() {
 	}
 	conf := config.GetConfig()
 	logger.Init(conf.LogDir, conf.LogLevel)
-	db.Init()
+	err := db.Init()
+
+	if err != nil {
+		log.Fatalln("db init failed, err:", err)
+	}
+
+	err = task.Init()
+	if err != nil {
+		log.Fatalln("task init failed, err:", err)
+	}
 
 	go func() {
 		r := gin.New()
