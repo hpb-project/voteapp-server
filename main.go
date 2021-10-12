@@ -46,6 +46,11 @@ func main() {
 		log.Fatalln("task init failed, err:", err)
 	}
 
+	err = task.Start()
+	if err != nil {
+		log.Fatalln("task start failed, err:", err)
+	}
+
 	go func() {
 		r := gin.New()
 		r.Use(logger.GinLoggerMiddleware(), gin.Recovery())
@@ -62,6 +67,8 @@ func main() {
 	signal.Notify(exitCh, exitSig...)
 
 	<-exitCh
+
+	task.Stop()
 	os.Exit(1)
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/hpb-project/votedapp-server/db"
 	log "github.com/sirupsen/logrus"
 	"math/big"
+	"sync"
 	"time"
 )
 
@@ -20,6 +21,7 @@ type BoeListRefresh struct {
 	stop    chan struct{}
 	start   chan struct{}
 	working bool
+	wg      sync.WaitGroup
 }
 
 func newBoeListTask() (*BoeListRefresh, error) {
@@ -30,23 +32,32 @@ func newBoeListTask() (*BoeListRefresh, error) {
 	if err != nil {
 		return nil, err
 	}
-	b.quit = make(chan struct{})
-	b.stop = make(chan struct{})
-	b.start = make(chan struct{})
+	b.quit = make(chan struct{}, 1)
+	b.stop = make(chan struct{}, 1)
+	b.start = make(chan struct{}, 1)
+	b.wg.Add(1)
+	go func() { err = b.loop() }()
+
+	if err != nil {
+		return nil, err
+	}
 	return &BoeListRefresh{}, nil
 }
 
 func (b *BoeListRefresh) Start() error {
-
+	b.start <- struct{}{}
 	return nil
 }
 
 func (b *BoeListRefresh) Stop() error {
+	b.stop <- struct{}{}
 	return nil
 }
 
 func (b *BoeListRefresh) loop() error {
-	ticker := time.NewTicker(time.Second * 5)
+	defer b.wg.Done()
+
+	ticker := time.NewTicker(time.Second * 999999)
 	defer ticker.Stop()
 	for {
 		select {
