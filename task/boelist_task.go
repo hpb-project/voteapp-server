@@ -10,6 +10,7 @@ import (
 	"github.com/hpb-project/votedapp-server/db"
 	log "github.com/sirupsen/logrus"
 	"math/big"
+	"strings"
 	"sync"
 	"time"
 )
@@ -23,11 +24,26 @@ type BoeListRefresh struct {
 	start   chan struct{}
 	working bool
 	wg      sync.WaitGroup
+
+	cacheName map[string]string
+	cache     []*db.BoeNode
+	cacheLock sync.RWMutex
+}
+
+var (
+	boelistTask *BoeListRefresh
+)
+
+func BoeListTask() *BoeListRefresh {
+	return boelistTask
 }
 
 func newBoeListTask() (*BoeListRefresh, error) {
+	if boelistTask != nil {
+		return boelistTask, nil
+	}
 	var err error
-	b := &BoeListRefresh{}
+	b := &BoeListRefresh{cacheName: make(map[string]string), cache: make([]*db.BoeNode, 0)}
 	b.conf = config.GetConfig()
 	b.client, err = ethclient.Dial(b.conf.RPC)
 	if err != nil {
@@ -42,6 +58,8 @@ func newBoeListTask() (*BoeListRefresh, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	boelistTask = b
 	return b, nil
 }
 
@@ -53,6 +71,27 @@ func (b *BoeListRefresh) Start() error {
 func (b *BoeListRefresh) Stop() error {
 	b.stop <- struct{}{}
 	return nil
+}
+
+func (b *BoeListRefresh) GetNodes() []db.BoeNode {
+	b.cacheLock.RLock()
+	defer b.cacheLock.RUnlock()
+	nodes := make([]db.BoeNode, 0)
+	for _, d := range b.cache {
+		nodes = append(nodes, *d)
+	}
+	return nodes
+}
+
+func (b *BoeListRefresh) GetName() map[string]string {
+	b.cacheLock.RLock()
+	defer b.cacheLock.RUnlock()
+	namemap := make(map[string]string)
+	for k, v := range b.cacheName {
+		namemap[k] = v
+	}
+
+	return namemap
 }
 
 func (b *BoeListRefresh) loop() error {
@@ -73,10 +112,12 @@ func (b *BoeListRefresh) loop() error {
 				log.Debug("boelist loop reset ticket to 5s")
 				ticker.Reset(loopCycle)
 				go b.getNewInfo()
+				go b.updateName()
 			}
 		case <-ticker.C:
 			log.Info("boelist get new info")
 			go b.getNewInfo()
+			go b.updateName()
 		}
 	}
 }
@@ -138,6 +179,21 @@ func (b *BoeListRefresh) loop() error {
 //	}
 //
 //}
+
+func (b *BoeListRefresh) updateName() {
+	nametable := &db.NodeName{}
+	nameInfo, err := nametable.GetAllInfo()
+	if err != nil {
+		log.Errorf("can't get node name info, err:%s\n", err)
+		return
+	}
+	b.cacheLock.Lock()
+	b.cacheName = make(map[string]string)
+	for _, info := range nameInfo {
+		b.cacheName[strings.ToLower(info.Coinbase)] = info.Name
+	}
+	b.cacheLock.Unlock()
+}
 
 func (b *BoeListRefresh) getNewInfo() {
 	if b.working {
@@ -271,6 +327,10 @@ func (b *BoeListRefresh) getNewInfo() {
 		}
 		records = append(records, r)
 	}
+
+	b.cacheLock.Lock()
+	b.cache = records
+	b.cacheLock.Unlock()
 
 	err = nodedb.RefreshAll(records)
 	if err != nil {

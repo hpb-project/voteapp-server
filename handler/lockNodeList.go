@@ -3,21 +3,20 @@ package handler
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/hpb-project/votedapp-server/db"
 	"github.com/hpb-project/votedapp-server/model"
+	"github.com/hpb-project/votedapp-server/task"
 	"net/http"
 	"strings"
 )
 
 func GetLockedList(c *gin.Context) {
-	nodeTable := db.BoeNode{}
-	nameTable := db.NodeName{}
-
-	allNodes, err := nodeTable.GetAll()
-	if err != nil {
-		ResponseError(c, http.StatusInternalServerError, fmt.Sprintf("got err:%s", err.Error()))
+	t := task.BoeListTask()
+	if t == nil {
+		ResponseError(c, http.StatusInternalServerError, fmt.Sprintf("server not ready"))
 		return
 	}
+	allNodes := t.GetNodes()
+	allName := t.GetName()
 
 	res := make([]*model.LockNodeInfo, 0)
 	for _, info := range allNodes {
@@ -27,8 +26,8 @@ func GetLockedList(c *gin.Context) {
 			LockNumber: info.LockNumber,
 			LockAddr:   info.LockAddr,
 		}
-		name, err := nameTable.GetNameByCoinbase(strings.ToLower(r.Coinbase))
-		if err == nil {
+		name, exist := allName[strings.ToLower(r.Coinbase)]
+		if exist {
 			r.Name = name
 		}
 		res = append(res, r)
