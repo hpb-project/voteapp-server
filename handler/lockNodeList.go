@@ -19,7 +19,7 @@ func GetLockedList(c *gin.Context) {
 		return
 	}
 
-	res := make([]*model.LockNodeInfo, len(allNodes))
+	res := make([]*model.LockNodeInfo, 0)
 	for _, info := range allNodes {
 		r := &model.LockNodeInfo{
 			Name:       fmt.Sprintf("node_%s", info.Coinbase[:10]),

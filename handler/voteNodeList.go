@@ -19,7 +19,7 @@ func GetVoteList(c *gin.Context) {
 		return
 	}
 
-	res := make([]*model.VoteNodeInfo, len(allNodes))
+	res := make([]*model.VoteNodeInfo, 0)
 	for _, info := range allNodes {
 		r := &model.VoteNodeInfo{
 			Name:       fmt.Sprintf("node_%s", info.Coinbase[:10]),

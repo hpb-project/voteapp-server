@@ -57,7 +57,7 @@ func (b *BoeListRefresh) Stop() error {
 
 func (b *BoeListRefresh) loop() error {
 	defer b.wg.Done()
-
+	loopCycle := time.Second * 15
 	ticker := time.NewTicker(time.Second * 999999)
 	defer ticker.Stop()
 	for {
@@ -71,7 +71,8 @@ func (b *BoeListRefresh) loop() error {
 			log.Info("boelist task started")
 			if ok {
 				log.Debug("boelist loop reset ticket to 5s")
-				ticker.Reset(time.Second * 5)
+				ticker.Reset(loopCycle)
+				go b.getNewInfo()
 			}
 		case <-ticker.C:
 			log.Info("boelist get new info")
@@ -79,6 +80,64 @@ func (b *BoeListRefresh) loop() error {
 		}
 	}
 }
+
+//
+//func (b *BoeListRefresh) monitor() {
+//	proxyAddr := common.HexToAddress(b.conf.ProxyAddr)
+//	proxy, err := contracts.NewProxy(proxyAddr, b.client)
+//	if err != nil {
+//		log.Errorf("get contract proxy failed, err:%s\n", err)
+//		return
+//	}
+//
+//	defaultOpt := &bind.CallOpts{}
+//
+//	nodesAddr, lockAddr, voteAddr, err := proxy.Getcontract(defaultOpt)
+//	if err != nil {
+//		log.Errorf("get contract address from proxy failed, err:%s\n", err)
+//		return
+//	}
+//	nodeContract, err := contracts.NewNodes(nodesAddr, b.client)
+//	if err != nil {
+//		log.Errorf("get contract nodes failed, err:%s\n", err)
+//		return
+//	}
+//	loclContract, err := contracts.NewLock(lockAddr, b.client)
+//	if err != nil {
+//		log.Errorf("get contract lock failed, err:%s\n", err)
+//		return
+//	}
+//	voteContract, err := contracts.NewVote(voteAddr, b.client)
+//	if err != nil {
+//		log.Errorf("get contract vote failed, err:%s\n", err)
+//		return
+//	}
+//	wopt := &bind.WatchOpts{}
+//	newBoe := make(chan *contracts.NodesAddBoeNode)
+//	addNodeSub, err := nodeContract.WatchAddBoeNode(wopt, newBoe, []common.Address{}, [][32]byte{})
+//	if err != nil {
+//		log.Errorf("watch addBoeNode failed, err:%s\n", err)
+//	}
+//
+//	delBoe := make(chan *contracts.NodesDeleteBoeNode)
+//	delNodeSub, err := nodeContract.WatchDeleteBoeNode(wopt, delBoe, []common.Address)
+//	if err != nil {
+//		log.Errorf("watch delBoeNode failed, err:%s\n", err)
+//	}
+//	doVote := make(chan *contracts.VoteDoVoted)
+//	voteSub, err := voteContract.WatchDoVoted(wopt, doVote, []*big.Int{}, []common.Address, []common.Address)
+//	if err != nil {
+//		log.Errorf("watch doVote failed, err:%s\n", err)
+//	}
+//
+//	for {
+//		select {
+//		case <-addNodeSub.Err():
+//
+//		}
+//	}
+//
+//}
 
 func (b *BoeListRefresh) getNewInfo() {
 	if b.working {
