@@ -41,7 +41,7 @@ func newBoeListTask() (*BoeListRefresh, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &BoeListRefresh{}, nil
+	return b, nil
 }
 
 func (b *BoeListRefresh) Start() error {
@@ -60,16 +60,20 @@ func (b *BoeListRefresh) loop() error {
 	ticker := time.NewTicker(time.Second * 999999)
 	defer ticker.Stop()
 	for {
+		log.Debug("boelist loop wait")
 		select {
-		case _, closed := <-b.stop:
-			if !closed {
+		case _, ok := <-b.stop:
+			if ok {
 				ticker.Reset(time.Hour * 999999)
 			}
-		case _, closed := <-b.start:
-			if !closed {
+		case _, ok := <-b.start:
+			log.Info("boelist task started")
+			if ok {
+				log.Debug("boelist loop reset ticket to 5s")
 				ticker.Reset(time.Second * 5)
 			}
 		case <-ticker.C:
+			log.Info("boelist get new info")
 			go b.getNewInfo()
 		}
 	}
@@ -182,6 +186,10 @@ func (b *BoeListRefresh) getNewInfo() {
 
 	nodedb := &db.BoeNode{}
 	nodedb.Drop()
+	nodedb.NewTable()
+
+	records := make([]*db.BoeNode, 0)
+
 	for _, value := range nodeinfo {
 		r := &db.BoeNode{
 			Coinbase:   value.nodeAddr.String(),
@@ -190,6 +198,11 @@ func (b *BoeListRefresh) getNewInfo() {
 			HolderAddr: value.holderAddr.String(),
 			VoteNum:    value.voteAmount,
 		}
-		r.Create()
+		records = append(records, r)
 	}
+	err = nodedb.BatchCreate(records)
+	if err != nil {
+		log.Errorf("node db batch create failed, err:%s\n", err)
+	}
+	log.Info("update node info finished")
 }

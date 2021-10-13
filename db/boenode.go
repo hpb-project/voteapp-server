@@ -18,6 +18,24 @@ type BoeNode struct {
 	VoteNum    *big.Int `gorm:"column:votes" json:"votes"`
 }
 
+func (dt *BoeNode) NewTable() {
+	orm := GetORM()
+	orm.AutoMigrate(&BoeNode{})
+}
+
+func (dt *BoeNode) BatchCreate(info []*BoeNode) error {
+	orm := GetORM()
+	log.Debug("batch create info length ", len(info))
+	if err := orm.Model(&BoeNode{}).Create(&info).Error; err != nil {
+		log.WithError(err).Errorln("db batch create BoeNode error", log.Fields{
+			"len(info)": len(info),
+		})
+		return errors.Wrap(err, "db batch create BoeNode error")
+	}
+
+	return nil
+}
+
 func (dt *BoeNode) Create() error {
 	orm := GetORM()
 
