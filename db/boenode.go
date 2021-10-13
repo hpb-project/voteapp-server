@@ -42,7 +42,7 @@ func (dt *BoeNode) RefreshAll(info []*BoeNode) error {
 	}
 
 	e := orm.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Where("1 = 1").Delete(&BoeNode{}).Error; err != nil {
+		if err := tx.Unscoped().Where("1 = 1").Delete(&BoeNode{}).Error; err != nil {
 			log.Errorf("delete all failed, err:%s\n", err)
 			return err
 		}

@@ -27,7 +27,7 @@ func GetVoteList(c *gin.Context) {
 			VoteNumber: info.VoteNum,
 		}
 		name, err := nameTable.GetNameByCoinbase(strings.ToLower(r.Coinbase))
-		if err != nil {
+		if err == nil {
 			r.Name = name
 		}
 		res = append(res, r)

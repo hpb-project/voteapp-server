@@ -28,7 +28,7 @@ func GetLockedList(c *gin.Context) {
 			LockAddr:   info.LockAddr,
 		}
 		name, err := nameTable.GetNameByCoinbase(strings.ToLower(r.Coinbase))
-		if err != nil {
+		if err == nil {
 			r.Name = name
 		}
 		res = append(res, r)
