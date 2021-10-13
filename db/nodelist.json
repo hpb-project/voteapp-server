@@ -20,7 +20,7 @@
   {"nodeName":"张皓","boeAddress":"0x219ed189515deae88b0cd88c7bc5f3700946c7c8"},
   {"nodeName":"HPB World","boeAddress":"0x21f490ccd998775e32e919ef47d37be7abc8c1fb"},
   {"nodeName":"彩虹","boeAddress":"0x2213e371b4fa13111a006db97f5d51aa9045f517"},
-  {"nodeName":"李建伟","boeAddress":"0x237824ad1ac18dc5a4f443fd1b158bb6a9ca42c6"},
+  {"nodeName":"鹤一部落.春秋","boeAddress":"0x237824ad1ac18dc5a4f443fd1b158bb6a9ca42c6"},
   {"nodeName":"朱可文","boeAddress":"0x237d1c55b477b2d314aa9986be1dcffc9564604e"},
   {"nodeName":"北京 coder","boeAddress":"0x23d2baf7305647982623d50e45b4050d9718b843"},
   {"nodeName":"毕国铭","boeAddress":"0x27d208aceb2095a71a5a20561277e14301f513a6"},
@@ -151,7 +151,7 @@
   {"nodeName":"EverNode","boeAddress":"0xcd0593fd4b85850f777bd67f1ab6138ceb4dda53"},
   {"nodeName":"曼陀罗帝国","boeAddress":"0xcd7098985a768f8903a1dfe164caf913a5dddbef"},
   {"nodeName":"Timo","boeAddress":"0xcdc7fb7312361df44129f942989a36e9f28260b3"},
-  {"nodeName":"胡东锋","boeAddress":"0xce0023156dbb96e12dda235876ef0ad8945ce592"},
+  {"nodeName":"鹤一部落.战国","boeAddress":"0xce0023156dbb96e12dda235876ef0ad8945ce592"},
   {"nodeName":"邀请节点-北邮","boeAddress":"0xd030a3cbe4102a7388fe1f5bccf49cb7f9e4fa00"},
   {"nodeName":"链内人","boeAddress":"0xd057755d9e3f46347255517a3333bebdc3b52073"},
   {"nodeName":"北京七叶子科技有限公司","boeAddress":"0xd51f0803595216f471048966d1c3ad7598b3d0b5"},
@@ -168,7 +168,7 @@
   {"nodeName":"邹乐","boeAddress":"0xe8149b815388948db4ad05680fff1145e0975c7d"},
   {"nodeName":"任奎","boeAddress":"0xe89d8ff34fa2784c0d54811e9fa88fa0354caecc"},
   {"nodeName":"GlyphNode","boeAddress":"0xea35c56527d63f2c745edf6debac0feb2e676eaa"},
-  {"nodeName":"曹亚兰","boeAddress":"0xea4a390500de3863f212e35a9d409eb19a394962"},
+  {"nodeName":"鹤一部落.大唐","boeAddress":"0xea4a390500de3863f212e35a9d409eb19a394962"},
   {"nodeName":"Snow Yan","boeAddress":"0xec810cf0caa0decdefef4a7512cd01e6cf7abc36"},
   {"nodeName":"耿月南","boeAddress":"0xeceb94bf29c28b221b345fca96f3af3d85b22979"},
   {"nodeName":"汇链资本","boeAddress":"0xed20c96de21f7684d1a1dba29a59791bb0ef8114"},
@@ -190,5 +190,6 @@
   {"nodeName":"欧阳超","boeAddress":"0xfe38232cd3732a93102d1ba45cc60f5e7cfca108"},
   {"nodeName":"张鹏","boeAddress":"0xff4f561caf89b7fc0047a48f2512edd9d3b90b49"},
   {"nodeName":"Vicky Carbone","boeAddress":"0xff988a64619220ad7579421e6141286852bc1037"},
-  {"nodeName":"丁文亮","boeAddress":"0xf583c835961e669556448b80e4e0e491c7ee6c26"}
+  {"nodeName":"丁文亮","boeAddress":"0xf583c835961e669556448b80e4e0e491c7ee6c26"},
+  {"nodeName":"FengHuang","boeAddress":"0x76ee68f7350c4652073108bb8fbc627e760dd64b"}
 ]
