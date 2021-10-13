@@ -1,9 +1,9 @@
 package db
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 type LockNode struct {

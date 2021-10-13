@@ -1,6 +1,7 @@
 package task
 
 import (
+	"context"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -92,7 +93,12 @@ func (b *BoeListRefresh) getNewInfo() {
 		log.Errorf("get contract proxy failed, err:%s\n", err)
 		return
 	}
+
 	defaultOpt := &bind.CallOpts{}
+	if block, err := b.client.BlockNumber(context.Background()); err != nil {
+		defaultOpt.BlockNumber = big.NewInt(int64(block))
+	}
+
 	nodesAddr, lockAddr, _, err := proxy.Getcontract(defaultOpt)
 	if err != nil {
 		log.Errorf("get contract address from proxy failed, err:%s\n", err)
@@ -185,22 +191,29 @@ func (b *BoeListRefresh) getNewInfo() {
 	}
 
 	nodedb := &db.BoeNode{}
-	nodedb.Drop()
 	nodedb.NewTable()
 
-	records := make([]*db.BoeNode, 0)
+	ether := new(big.Int).Exp(big.NewInt(10), big.NewInt(18), nil)
 
+	records := make([]*db.BoeNode, 0)
 	for _, value := range nodeinfo {
 		r := &db.BoeNode{
 			Coinbase:   value.nodeAddr.String(),
 			LockAddr:   value.lockedAddr.String(),
-			LockNumber: value.lockedAmount,
+			LockNumber: 0,
 			HolderAddr: value.holderAddr.String(),
-			VoteNum:    value.voteAmount,
+			VoteNum:    0,
+		}
+		if value.lockedAmount != nil {
+			r.LockNumber = new(big.Int).Quo(value.lockedAmount, ether).Uint64()
+		}
+		if value.voteAmount != nil {
+			r.VoteNum = new(big.Int).Quo(value.voteAmount, ether).Uint64()
 		}
 		records = append(records, r)
 	}
-	err = nodedb.BatchCreate(records)
+
+	err = nodedb.RefreshAll(records)
 	if err != nil {
 		log.Errorf("node db batch create failed, err:%s\n", err)
 	}

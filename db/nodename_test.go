@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hpb-project/votedapp-server/config"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"io/ioutil"
 	"testing"
 )
@@ -26,11 +25,7 @@ func initTable(t *testing.T) error {
 		return err
 	}
 	gorm := GetORM()
-	if gorm.HasTable(&NodeName{}) {
-		gorm.AutoMigrate(&NodeName{})
-	} else {
-		gorm.CreateTable(&NodeName{})
-	}
+	gorm.AutoMigrate(&NodeName{})
 	return nil
 }
 
@@ -75,5 +70,5 @@ func TestNodeName_GetAllInfo(t *testing.T) {
 }
 
 func TestNodeName_CloseDB(t *testing.T) {
-	GetORM().Close()
+	//GetORM().
 }

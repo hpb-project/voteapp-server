@@ -1,21 +1,25 @@
 package db
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
-	"math/big"
+	"gorm.io/gorm"
+	"reflect"
 )
 
 type BoeNode struct {
 	gorm.Model
-	Coinbase   string   `gorm:"column:coinbase" json:"boeAddress"`
-	LockNumber *big.Int `gorm:"column:locknumber" json:"lockNumber"`
-	LockAddr   string   `gorm:"column:lockaddr" json:"lockAddr"`
-	HolderAddr string   `gorm:"column:holderaddr" json:"holderAddr"`
-	HID        string   `gorm:"column:hid" json:"hid"`
-	CID        string   `gorm:"column:cid" json:"cid"`
-	VoteNum    *big.Int `gorm:"column:votes" json:"votes"`
+	Coinbase   string `gorm:"column:coinbase" json:"boeAddress"`
+	LockNumber uint64 `gorm:"column:locknumber" json:"lockNumber"`
+	LockAddr   string `gorm:"column:lockaddr" json:"lockAddr"`
+	HolderAddr string `gorm:"column:holderaddr" json:"holderAddr"`
+	HID        string `gorm:"column:hid" json:"hid"`
+	CID        string `gorm:"column:cid" json:"cid"`
+	VoteNum    uint64 `gorm:"column:votes" json:"votes"`
+}
+
+func (dt *BoeNode) TableName() string {
+	return "tb_boenode"
 }
 
 func (dt *BoeNode) NewTable() {
@@ -23,16 +27,36 @@ func (dt *BoeNode) NewTable() {
 	orm.AutoMigrate(&BoeNode{})
 }
 
-func (dt *BoeNode) BatchCreate(info []*BoeNode) error {
+func (dt *BoeNode) RefreshAll(info []*BoeNode) error {
 	orm := GetORM()
 	log.Debug("batch create info length ", len(info))
-	if err := orm.Model(&BoeNode{}).Create(&info).Error; err != nil {
-		log.WithError(err).Errorln("db batch create BoeNode error", log.Fields{
-			"len(info)": len(info),
-		})
-		return errors.Wrap(err, "db batch create BoeNode error")
+	if len(info) == 0 {
+		return nil
 	}
 
+	t := reflect.TypeOf(info[0])
+	insertList := reflect.New(reflect.SliceOf(t)).Elem()
+
+	for _, elem := range info {
+		insertList = reflect.Append(insertList, reflect.ValueOf(elem))
+	}
+
+	e := orm.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("1 = 1").Delete(&BoeNode{}).Error; err != nil {
+			log.Errorf("delete all failed, err:%s\n", err)
+			return err
+		}
+		if err := tx.CreateInBatches(insertList.Interface(), 10).Error; err != nil {
+			log.Errorf("insert all failed, err:%s\n", err)
+			return err
+		}
+		return nil
+	})
+
+	if e != nil {
+		log.Errorf("update all failed, err:%s\n", e)
+		return e
+	}
 	return nil
 }
 
@@ -62,7 +86,7 @@ func (dt *BoeNode) GetByCoinbase(coinbase string) error {
 	return nil
 }
 
-func (dt *BoeNode) GetAllNode() (all []*BoeNode, err error) {
+func (dt *BoeNode) GetAll() (all []*BoeNode, err error) {
 	orm := GetORM()
 
 	if err = orm.Model(&BoeNode{}).Find(&all).Error; err != nil {
@@ -83,8 +107,9 @@ func (dt *BoeNode) Update() error {
 	return nil
 }
 
-func (dt *BoeNode) Drop() error {
+func (dt *BoeNode) Clear() error {
 	orm := GetORM()
-	orm.DropTable(&BoeNode{})
+	orm.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&BoeNode{})
+
 	return nil
 }

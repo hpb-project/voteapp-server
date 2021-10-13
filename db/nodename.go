@@ -1,15 +1,19 @@
 package db
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 type NodeName struct {
 	gorm.Model
-	Name     	string    	`gorm:"column:name" json:"nodeName"`
-	Coinbase    string		`gorm:"column:coinbase" json:"boeAddress"`
+	Name     string `gorm:"column:name" json:"nodeName"`
+	Coinbase string `gorm:"column:coinbase" json:"boeAddress"`
+}
+
+func (dt *NodeName) TableName() string {
+	return "tb_nodename"
 }
 
 func (dt *NodeName) Create() error {
@@ -25,13 +29,13 @@ func (dt *NodeName) Create() error {
 	return nil
 }
 
-func (dt *NodeName) GetNameByCoinbase(coinbase string) (string,error) {
+func (dt *NodeName) GetNameByCoinbase(coinbase string) (string, error) {
 	orm := GetORM()
 	var result NodeName
 
 	if err := orm.Model(&NodeName{}).Where("coinbase = ?", coinbase).First(&result).Error; err != nil {
 		log.Errorf("GetNameByCoinbase error:%s, %s\n",
-			err.Error(), log.Fields{"coinbase":coinbase})
+			err.Error(), log.Fields{"coinbase": coinbase})
 
 		return "", errors.Wrap(err, "GetNameByCoinbase error")
 	}
