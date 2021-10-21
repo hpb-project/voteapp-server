@@ -232,6 +232,7 @@ func (b *BoeListRefresh) getNewInfo() {
 		voteAmount   *big.Int       // 投票数量
 	}
 	var nodeinfo = make(map[common.Address]*info)
+	var allnodelist = make([]*info, 0)
 
 	boelist, err := nodeContract.GetAllBoesAddrs(defaultOpt)
 	if err != nil {
@@ -243,6 +244,7 @@ func (b *BoeListRefresh) getNewInfo() {
 		n := &info{}
 		n.nodeAddr = node
 		nodeinfo[node] = n
+		allnodelist = append(allnodelist, n)
 	}
 
 	lockContract, err := contracts.NewLock(lockAddr, b.client)
@@ -311,7 +313,7 @@ func (b *BoeListRefresh) getNewInfo() {
 	ether := new(big.Int).Exp(big.NewInt(10), big.NewInt(18), nil)
 
 	records := make([]*db.BoeNode, 0)
-	for _, value := range nodeinfo {
+	for _, value := range allnodelist {
 		r := &db.BoeNode{
 			Coinbase:   value.nodeAddr.String(),
 			LockAddr:   value.lockedAddr.String(),
