@@ -20,6 +20,9 @@ func GetVoteList(c *gin.Context) {
 
 	res := make([]*model.VoteNodeInfo, 0)
 	for _, info := range allNodes {
+		if info.LockNumber <= 0 {
+			continue
+		}
 		r := &model.VoteNodeInfo{
 			Name:       fmt.Sprintf("node_%s", info.Coinbase[:10]),
 			Coinbase:   info.Coinbase,
