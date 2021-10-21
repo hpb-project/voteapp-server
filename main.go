@@ -12,6 +12,7 @@ import (
 	"github.com/hpb-project/votedapp-server/task"
 	"github.com/hpb-project/votedapp-server/version"
 	log "github.com/sirupsen/logrus"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -53,6 +54,7 @@ func main() {
 
 	go func() {
 		r := gin.New()
+		r.Use(Cors()) //默认跨域
 		r.Use(logger.GinLoggerMiddleware(), gin.Recovery())
 		router.InitRouter(r)
 
@@ -80,5 +82,24 @@ func initFlags() {
 
 	if versionFlag {
 		version.ShowVersion()
+	}
+}
+
+func Cors() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		method := c.Request.Method
+		origin := c.Request.Header.Get("Origin")
+		if origin != "" {
+			c.Header("Access-Control-Allow-Origin", "*")
+			c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			c.Header("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization")
+			c.Header("Access-Control-Allow-Credentials", "true")
+			c.Set("content-type", "application/json")
+		}
+		//放行所有OPTIONS方法
+		if method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusNoContent)
+		}
+		c.Next()
 	}
 }
