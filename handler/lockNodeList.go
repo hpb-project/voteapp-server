@@ -22,13 +22,15 @@ func GetLockedList(c *gin.Context) {
 	for _, info := range allNodes {
 		r := &model.LockNodeInfo{
 			Name:       fmt.Sprintf("node_%s", info.Coinbase[:10]),
+			NameEng:    fmt.Sprintf("node_%s", info.Coinbase[:10]),
 			Coinbase:   info.Coinbase,
 			LockNumber: info.LockNumber,
 			LockAddr:   info.LockAddr,
 		}
 		name, exist := allName[strings.ToLower(r.Coinbase)]
 		if exist {
-			r.Name = name
+			r.Name = name.Name
+			r.NameEng = name.NameEng
 		}
 		res = append(res, r)
 	}

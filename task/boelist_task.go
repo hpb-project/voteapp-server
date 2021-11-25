@@ -8,6 +8,7 @@ import (
 	"github.com/hpb-project/votedapp-server/config"
 	"github.com/hpb-project/votedapp-server/contracts"
 	"github.com/hpb-project/votedapp-server/db"
+	"github.com/hpb-project/votedapp-server/model"
 	log "github.com/sirupsen/logrus"
 	"math/big"
 	"strings"
@@ -25,7 +26,7 @@ type BoeListRefresh struct {
 	working bool
 	wg      sync.WaitGroup
 
-	cacheName map[string]string
+	cacheName map[string]model.NodeName
 	cache     []*db.BoeNode
 	cacheLock sync.RWMutex
 }
@@ -43,7 +44,7 @@ func newBoeListTask() (*BoeListRefresh, error) {
 		return boelistTask, nil
 	}
 	var err error
-	b := &BoeListRefresh{cacheName: make(map[string]string), cache: make([]*db.BoeNode, 0)}
+	b := &BoeListRefresh{cacheName: make(map[string]model.NodeName), cache: make([]*db.BoeNode, 0)}
 	b.conf = config.GetConfig()
 	b.client, err = ethclient.Dial(b.conf.RPC)
 	if err != nil {
@@ -83,10 +84,10 @@ func (b *BoeListRefresh) GetNodes() []db.BoeNode {
 	return nodes
 }
 
-func (b *BoeListRefresh) GetName() map[string]string {
+func (b *BoeListRefresh) GetName() map[string]model.NodeName {
 	b.cacheLock.RLock()
 	defer b.cacheLock.RUnlock()
-	namemap := make(map[string]string)
+	namemap := make(map[string]model.NodeName)
 	for k, v := range b.cacheName {
 		namemap[k] = v
 	}
@@ -188,9 +189,9 @@ func (b *BoeListRefresh) updateName() {
 		return
 	}
 	b.cacheLock.Lock()
-	b.cacheName = make(map[string]string)
+	b.cacheName = make(map[string]model.NodeName)
 	for _, info := range nameInfo {
-		b.cacheName[strings.ToLower(info.Coinbase)] = info.Name
+		b.cacheName[strings.ToLower(info.Coinbase)] = model.NodeName{NameEng: info.NameEng, Name: info.Name}
 	}
 	b.cacheLock.Unlock()
 }

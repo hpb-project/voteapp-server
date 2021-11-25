@@ -9,6 +9,7 @@ import (
 type NodeName struct {
 	gorm.Model
 	Name     string `gorm:"column:name" json:"nodeName"`
+	NameEng  string `gorm:"column:name_eng" json:"nodeName_eng"`
 	Coinbase string `gorm:"column:coinbase" json:"boeAddress"`
 }
 
@@ -29,7 +30,7 @@ func (dt *NodeName) Create() error {
 	return nil
 }
 
-func (dt *NodeName) GetNameByCoinbase(coinbase string) (string, error) {
+func (dt *NodeName) GetNameByCoinbase(coinbase string) (string, string, error) {
 	orm := GetORM()
 	var result NodeName
 
@@ -37,10 +38,10 @@ func (dt *NodeName) GetNameByCoinbase(coinbase string) (string, error) {
 		log.Errorf("GetNameByCoinbase error:%s, %s\n",
 			err.Error(), log.Fields{"coinbase": coinbase})
 
-		return "", errors.Wrap(err, "GetNameByCoinbase error")
+		return "", "", errors.Wrap(err, "GetNameByCoinbase error")
 	}
 
-	return result.Name, nil
+	return result.Name, result.NameEng, nil
 }
 
 func (dt *NodeName) GetAllInfo() (all []*NodeName, err error) {

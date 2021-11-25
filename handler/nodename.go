@@ -16,10 +16,26 @@ func GetNodeName(c *gin.Context) {
 		return
 	}
 	d := &db.NodeName{}
-	name, err := d.GetNameByCoinbase(strings.ToLower(addr))
+	name, _, err := d.GetNameByCoinbase(strings.ToLower(addr))
 	if err != nil {
 		ResponseError(c, http.StatusBadRequest, fmt.Sprintf("got err:%s", err.Error()))
 	} else {
 		ResponseSuccess(c, name)
+	}
+}
+
+func GetNodeEngName(c *gin.Context) {
+	addr := c.Query("addr")
+
+	if len(addr) != 42 {
+		ResponseError(c, http.StatusBadRequest, fmt.Sprintf("invalid param"))
+		return
+	}
+	d := &db.NodeName{}
+	_, eng, err := d.GetNameByCoinbase(strings.ToLower(addr))
+	if err != nil {
+		ResponseError(c, http.StatusBadRequest, fmt.Sprintf("got err:%s", err.Error()))
+	} else {
+		ResponseSuccess(c, eng)
 	}
 }

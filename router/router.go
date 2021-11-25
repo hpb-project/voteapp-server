@@ -8,6 +8,7 @@ import (
 func InitRouter(r *gin.Engine) {
 	v1 := r.Group("/v1")
 	v1.GET("/nodename/:addr", handler.GetNodeName)
+	v1.GET("/nodenameeng/:addr", handler.GetNodeEngName)
 	v1.GET("/locklist/", handler.GetLockedList)
 	v1.GET("/votelist/", handler.GetVoteList)
 }

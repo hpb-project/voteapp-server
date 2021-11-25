@@ -45,7 +45,7 @@ func TestNodeName_Create(t *testing.T) {
 	}
 
 	for _, d := range datas {
-		if name, err := d.GetNameByCoinbase(d.Coinbase); err == nil {
+		if name, _, err := d.GetNameByCoinbase(d.Coinbase); err == nil {
 			fmt.Printf("coinbase %s existed, name is %s.\n", d.Coinbase, name)
 			continue
 		}

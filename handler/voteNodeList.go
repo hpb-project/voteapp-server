@@ -25,12 +25,14 @@ func GetVoteList(c *gin.Context) {
 		}
 		r := &model.VoteNodeInfo{
 			Name:       fmt.Sprintf("node_%s", info.Coinbase[:10]),
+			NameEng:    fmt.Sprintf("node_%s", info.Coinbase[:10]),
 			Coinbase:   info.Coinbase,
 			VoteNumber: info.VoteNum,
 		}
 		name, exist := allName[strings.ToLower(r.Coinbase)]
 		if exist {
-			r.Name = name
+			r.Name = name.Name
+			r.NameEng = name.NameEng
 		}
 		res = append(res, r)
 	}
