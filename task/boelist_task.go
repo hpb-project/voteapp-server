@@ -211,12 +211,12 @@ func (b *BoeListRefresh) getNewInfo() {
 	b.working = true
 	defer func() { b.working = false }()
 
-	proxyAddr := common.HexToAddress(hpbProxyContract)
-	proxy, err := contracts.NewProxy(proxyAddr, b.client)
-	if err != nil {
-		log.Errorf("get contract proxy failed, err:%s\n", err)
-		return
-	}
+	//proxyAddr := common.HexToAddress(hpbProxyContract)
+	//proxy, err := contracts.NewProxy(proxyAddr, b.client)
+	//if err != nil {
+	//	log.Errorf("get contract proxy failed, err:%s\n", err)
+	//	return
+	//}
 
 	defaultOpt := &bind.CallOpts{}
 	if block, err := b.client.BlockNumber(context.Background()); err != nil {
@@ -224,12 +224,14 @@ func (b *BoeListRefresh) getNewInfo() {
 	}
 
 	nodesAddr, lockAddr := common.HexToAddress(hpbNodeContract), common.HexToAddress(hpbLockContract)
+	voteAddr := common.HexToAddress(hpbVoteContract)
 
 	nodeContract, err := contracts.NewNodes(nodesAddr, b.client)
 	if err != nil {
 		log.Errorf("get contract nodes failed, err:%s\n", err)
 		return
 	}
+
 	type info struct {
 		nodeAddr     common.Address // 节点地址
 		holderAddr   common.Address // 持币地址
@@ -283,8 +285,15 @@ func (b *BoeListRefresh) getNewInfo() {
 
 	}
 
+	voteContract, err := contracts.NewVote(voteAddr, b.client)
+	if err != nil {
+		log.Errorf("get contract lock failed, err:%s\n", err)
+		return
+	}
+
 	{ // get vote info.
-		addrlist, amountlist, err := proxy.FetchAllVoteResult(defaultOpt)
+
+		addrlist, amountlist, err := voteContract.FetchAllVoteResult(defaultOpt)
 		if err != nil {
 			log.Errorf("fetch all vote result failed, err:%s\n", err)
 			return
@@ -299,7 +308,7 @@ func (b *BoeListRefresh) getNewInfo() {
 	}
 
 	{ // get holder address.
-		nodelist, holderlist, err := proxy.FetchAllHolderAddrs(defaultOpt)
+		nodelist, holderlist, err := nodeContract.FetchAllHolderAddrs(defaultOpt)
 		if err != nil {
 			log.Errorf("fetch all holder failed, err:%s\n", err)
 			return
