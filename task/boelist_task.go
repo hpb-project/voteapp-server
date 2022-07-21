@@ -16,6 +16,14 @@ import (
 	"time"
 )
 
+const (
+	hpbNodeContract   = "0x451d785A0379E637d17C1C0E96cA150168A5Ab9A"
+	hpbLockContract   = "0x74054455F954E1DDAf0694d906e4e68D63a33A18"
+	hpbVoteContract   = "0x35a3445C0ca0B01B7CEA2F867D762f6410c9e952"
+	hpbProxyContract  = "0x60a3698bE1493da2065E6F84B2E77B5b5D201D5D"
+	hpbFilterContract = "0x303632d9E171a130B85ee1a23cD5902e5a2F7A51"
+)
+
 // used to refresh boelist
 type BoeListRefresh struct {
 	conf    *config.Config
@@ -203,7 +211,7 @@ func (b *BoeListRefresh) getNewInfo() {
 	b.working = true
 	defer func() { b.working = false }()
 
-	proxyAddr := common.HexToAddress(b.conf.ProxyAddr)
+	proxyAddr := common.HexToAddress(hpbProxyContract)
 	proxy, err := contracts.NewProxy(proxyAddr, b.client)
 	if err != nil {
 		log.Errorf("get contract proxy failed, err:%s\n", err)
@@ -215,11 +223,8 @@ func (b *BoeListRefresh) getNewInfo() {
 		defaultOpt.BlockNumber = big.NewInt(int64(block))
 	}
 
-	nodesAddr, lockAddr, _, err := proxy.Getcontract(defaultOpt)
-	if err != nil {
-		log.Errorf("get contract address from proxy failed, err:%s\n", err)
-		return
-	}
+	nodesAddr, lockAddr := common.HexToAddress(hpbNodeContract), common.HexToAddress(hpbLockContract)
+
 	nodeContract, err := contracts.NewNodes(nodesAddr, b.client)
 	if err != nil {
 		log.Errorf("get contract nodes failed, err:%s\n", err)
