@@ -53,7 +53,7 @@
  {"nodeName_eng":"daowuji", "nodeName":"道无极","boeAddress":"0x4c8a1996754c11ac255c747fdb36f4288d230541"},
  {"nodeName_eng":"wanghaixia", "nodeName":"王海霞","boeAddress":"0x4c8dbcc7768a25ab20b5a25e3db20e6ee497bd92"},
  {"nodeName_eng":"lijun", "nodeName":"李俊","boeAddress":"0x4d962154aeab2f75d0df714dbb89ae10f53aa258"},
- {"nodeName_eng":"shilei", "nodeName":"史磊","boeAddress":"0x522d12e5c5d63c86235a39e2f988623cb50fccb2"},
+ {"nodeName_eng":"shilei", "nodeName":"史磊","boeAddress":"0xc015912f9b356dc62bf031f0d1387cbbe62f6676"},
  {"nodeName_eng":"zhouyajuan", "nodeName":"周雅娟","boeAddress":"0x5354455b3499878a3eab7089928ee9de041b9e89"},
  {"nodeName_eng":"miner_code", "nodeName":"miner_code","boeAddress":"0x5494ba2b37e5703dfe6e488d0d9c204a67135e0f"},
  {"nodeName_eng":"chenquanwei", "nodeName":"陈全伟","boeAddress":"0x567cc673b9458d94ab428e4d354959cfff46f2d9"},
@@ -191,5 +191,6 @@
  {"nodeName_eng":"Vicky Carbone", "nodeName":"Vicky Carbone","boeAddress":"0xff988a64619220ad7579421e6141286852bc1037"},
  {"nodeName_eng":"DingWenLiang", "nodeName":"丁文亮","boeAddress":"0xf583c835961e669556448b80e4e0e491c7ee6c26"},
  {"nodeName_eng":"FengHuang", "nodeName":"FengHuang","boeAddress":"0x76ee68f7350c4652073108bb8fbc627e760dd64b"},
+ {"nodeName_eng":"wensenz", "nodeName":"wensenz","boeAddress":"0xcb6425ba62f7594f64ec874a3607060a1481302f"},
  {"nodeName_eng":"Shiburazazu", "nodeName":"Shiburazazu","boeAddress":"0xecca59c8d8dad1b958fb34f6ea42c495a7f4e896"}
 ]
